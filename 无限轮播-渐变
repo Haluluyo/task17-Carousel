@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+  <meta charset="utf-8">
+  <meta name="description" content="轮播-渐变"/>
+  <title>jQuery-Carousel渐变</title>
+  
+  <style>
+    *{
+  margin: 0;
+  padding: 0;
+}
+ul,a{
+  list-style: none;
+  text-decoration: none;
+}
+.wrap{
+  width: 320px;
+  height: 180px;
+  overflow: hidden;
+  position: relative;
+}
+.wrap #img-ct{
+  width: 1280px;
+  height: 180px;
+  /*overflow: hidden;*/
+}
+.wrap #img-ct >li{
+  position: absolute;
+  display: none;
+}
+.wrap #img-ct img{
+  width: 320px;
+  height: 180px;
+}
+
+.wrap .button{
+  position: absolute;
+  z-index: 1;
+  width: 20px;
+  height: 20px;
+  top: 50%;
+  margin-top: -10px;
+  border-radius: 50%;
+  border: 1px solid #999;
+  background: #4e443c;
+  color: #fff;
+  line-height: 20px;
+  text-align: center;
+  opacity: 0.8;
+}
+.wrap .button:hover{
+  opacity: 1;
+}
+.wrap .button.pre{
+  left: 10px;
+}
+.wrap .button.next{
+  right: 10px;
+}
+
+.wrap #bullet{
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  //height: 10px;
+  bottom: 10px;
+  //background: red;
+  text-align: center;
+  font-size: 0;
+} 
+.wrap #bullet >li{
+  display: inline-block;
+  //position: absolute;
+  width: 20px;
+  height: 5px;
+  margin: 0 2px;
+  background: #fff;
+}
+.wrap #bullet >li.active{
+  background:#4e443c;
+}
+  </style>
+  
+</head>
+<body>
+  <div class="wrap">
+    <ul id="img-ct">
+      <li data-id=0><a href="#"><img src="http://cdn.jirengu.com/book.jirengu.com/img/26.jpg"></a></li>
+	  <li data-id=1><a href="#"><img src="http://cdn.jirengu.com/book.jirengu.com/img/25.jpg"></a></li>
+	  <li data-id=2><a href="#"><img src="http://cdn.jirengu.com/book.jirengu.com/img/24.jpg"></a></li>
+	  <li data-id=3><a href="#"><img src="http://cdn.jirengu.com/book.jirengu.com/img/23.jpg"></a></li>
+    </ul>
+    <a class="pre button" href="#"><</a>
+    <a class="next button" href="#">></a>
+    <ul id="bullet">
+      <li class="active"></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
+  </div>
+  
+  <script>
+    var curIndex=0;
+var isAnimate=false;
+
+var $btnPre=$('.wrap .pre');
+var $btnNext=$('.wrap .next');
+var $bullets=$('#bullet li');
+var $imgCt=$('#img-ct');
+var $imgs=$('#img-ct li');
+
+var imgCount=$imgs.length;
+
+$imgs.eq(0).show();
+autoPlay()
+
+$btnPre.click(function(){
+  PrePlay();
+})
+$btnNext.click(function(){
+  NextPlay();
+})
+$bullets.click(function(){
+  var index=$(this).index()
+  $imgs.eq(index).fadeIn()
+       .siblings().fadeOut();
+  setBullet(index);
+})
+
+function PrePlay(){
+  if(isAnimate) return;
+  isAnimate=true;
+  curIndex--;
+  if(curIndex<0){
+    curIndex=imgCount-1;
+    isAnimate=false;
+  }
+  $imgs.eq(curIndex).fadeIn(function(){
+    isAnimate=false;
+  })
+       .siblings().fadeOut();
+  setBullet(curIndex);
+}
+function NextPlay(){
+  if(isAnimate) return;
+  isAnimate=true;
+  curIndex++
+  if(curIndex===imgCount){
+    curIndex=0;
+  }
+  $imgs.eq(curIndex).fadeIn(function(){
+    isAnimate=false;
+  })
+       .siblings().fadeOut();
+  setBullet(curIndex);
+}
+
+function autoPlay(){
+  timer = setInterval(function(){
+    NextPlay()
+  },3000);
+}
+function stopPlay(){
+  clearInterval(timer);
+}
+$('.wrap').hover(function(){
+  stopPlay();
+},function(){
+  autoPlay();
+})
+function setBullet(idx){
+  $bullets.removeClass('active')
+          .eq(idx).addClass('active')
+}
+  </script>
+</body>
+</html>
