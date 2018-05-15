@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+  <meta charset="utf-8">
+  <meta name="description" content="轮播-左右滚动"/>
+  <title>jQuery-Carousel</title>
+  
+  <style>
+  *{
+    margin: 0;
+   padding: 0;
+  }
+  ul,a{
+    list-style: none;
+    text-decoration: none;
+  }
+  .wrap{
+    width: 480px;
+    height: 270px;
+    margin: 10px auto;
+    position: relative;
+    overflow: hidden;
+  }
+  #img-ct{
+    //width: 1920px;
+    height: 270px;
+    overflow: hidden;
+    position: absolute;
+    left: -480px;
+  }
+  #img-ct img{
+    width: 480px;
+    height: 270px;
+    float: left;
+  }
+  .wrap .button{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid #999;
+    background: #4E443C;
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    margin-top: -15px;
+    line-height: 30px;
+    text-align: center;
+    color: #fff;
+    opacity: 0.8;
+    cursor: pointer;
+  }
+  .wrap .button:hover{
+    opacity: 1;
+  }
+  .wrap .button.pre{
+    left: 10px;
+  }
+  .wrap .button.next{
+    right: 10px;
+  }
+  .wrap #bullet{
+    width: 100%;
+    bottom: 10px;
+    //border: 1px solid red;
+    position: absolute;
+    text-align: center;
+    font-size: 0;
+  }
+  .wrap #bullet >li{
+    display: inline-block;
+    width: 30px;
+    height: 6px;
+    margin: 0 2px;
+    background: #fff;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  .wrap #bullet >li.active{
+    background: #4E443C;
+  }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <ul id="img-ct">
+      <li data-id=0><a href="#"><img src="http://cdn.jirengu.com/book.jirengu.com/img/26.jpg"></a></li>
+	  <li data-id=1><a href="#"><img src="http://cdn.jirengu.com/book.jirengu.com/img/25.jpg"></a></li>
+	  <li data-id=2><a href="#"><img src="http://cdn.jirengu.com/book.jirengu.com/img/24.jpg"></a></li>
+	  <li data-id=3><a href="#"><img src="http://cdn.jirengu.com/book.jirengu.com/img/23.jpg"></a></li>
+    </ul>
+    <a class="pre button" href="#"><</a>
+    <a class="next button" href="#">></a>
+    <ul id="bullet">
+      <li class="active"></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
+  </div>
+  
+  <script>
+    var imgIndex=0;
+    var isAnimate=false;
+
+    var $preBtn=$('.wrap .pre');
+    var $nextBtn=$('.wrap .next');
+    var $bullets=$('.wrap #bullet li');
+    var $imgCt=$('.wrap #img-ct');
+    var $imgs=$('.wrap #img-ct li');
+
+    var imgCount=$('#img-ct li').length;
+    var imgWidth=$('#img-ct img').width();
+
+    $imgCt.prepend($imgs.eq(3).clone());
+    $imgCt.append($imgs.eq(0).clone());
+    $imgCt.width((imgCount+2)*imgWidth);
+
+    autoPlay();
+
+    $nextBtn.click(function(){
+      playNext(1);
+    })
+    $preBtn.click(function(){
+      playPre(1);
+    })
+    $bullets.click(function(){
+      var index=$(this).index();
+      if(index>imgIndex){
+        playNext(index-imgIndex);
+      }else if(index<imgIndex){
+        playPre(imgIndex-index);
+      }
+    })
+
+    function playNext(idx){
+      if(isAnimate) return;
+      isAnimate=true
+      $imgCt.animate({
+        left: '-='+imgWidth*idx
+      },function(){
+        imgIndex+=idx;
+        if(imgIndex===imgCount){
+          imgIndex=0;
+          $imgCt.css({left:-imgWidth});
+        }
+        setbullet()
+        isAnimate=false;
+      })
+      console.log(imgIndex)
+    }
+    function playPre(idx){
+      /*imgIndex--;
+      $imgCt.animate({left: '+='+imgWidth})
+      if(imgIndex<-2){
+        imgIndex=imgCount-1;
+        $imgCt.css({left:-imgWidth*imgCount});
+      }*/
+      if(isAnimate) return;
+      isAnimate=true
+      $imgCt.animate({
+        left:'+='+imgWidth*idx
+      },function(){
+        imgIndex-=idx;
+        if(imgIndex<0){
+          imgIndex=imgCount-1;
+          $imgCt.css({left:-imgWidth*imgCount});
+        }
+        setbullet() 
+        isAnimate=false;
+      }) 
+    }
+    function setbullet(){
+      $bullets.removeClass('active')
+              .eq(imgIndex).addClass('active')
+    }
+    function autoPlay(){
+      timer = setInterval(function(){
+        playNext(1)
+      },1000);
+    }
+    function stop(){
+      clearInterval(timer);
+    }
+    $('.wrap').hover(function(){
+      stop();
+    },function(){
+      play();
+    })
+  </script>
+  
+</body>
+</html>
